@@ -1,0 +1,44 @@
+{
+  "datasets": [
+    {
+      "id": "heart_disease",
+      "name": "Heart Disease",
+      "sector": "healthcare",
+      "file": "heart_disease.csv",
+      "required_columns": ["age", "sex", "cp", "trestbps"],
+      "sensitive_attributes": ["age", "sex"]
+    },
+    {
+      "id": "credit_risk",
+      "name": "Credit Risk",
+      "sector": "finance",
+      "file": "credit_risk.csv",
+      "required_columns": ["age", "income", "credit_score"],
+      "sensitive_attributes": ["age"]
+    },
+    {
+      "id": "adult_income",
+      "name": "Adult Income",
+      "sector": "hr",
+      "file": "adult_income.csv",
+      "required_columns": ["age", "education", "occupation"],
+      "sensitive_attributes": ["age", "sex"]
+    },
+    {
+      "id": "crime_data",
+      "name": "Crime Data",
+      "sector": "law",
+      "file": "crime_data.csv",
+      "required_columns": ["location", "crime_type"],
+      "sensitive_attributes": ["race"]
+    },
+    {
+      "id": "student_performance",
+      "name": "Student Performance",
+      "sector": "education",
+      "file": "student_performance.csv",
+      "required_columns": ["grade", "study_time"],
+      "sensitive_attributes": ["sex"]
+    }
+  ]
+}

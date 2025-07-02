@@ -1,0 +1,155 @@
+{
+    "source": "RBI Master Direction on Outsourcing of Information Technology Services",
+    "date": "2023-04-10",
+    "requirements": [
+        {
+            "id": "RBI_IV_9_fairness",
+            "principle": "Fairness",
+            "rbi_paragraph": "Chapter IV, Para 9",
+            "description": "Ensure non-biased AI decisions in outsourced credit scoring services",
+            "category": "General Principles",
+            "thresholds": {
+                "score": 8,
+                "Disparate Impact": 0.8,
+                "issues": 0
+            },
+            "validation": "Check if score >= 8, Disparate Impact >= 0.8, no bias issues",
+            "compliance_status": "To be assessed"
+        },
+        {
+            "id": "RBI_V_11_privacy",
+            "principle": "Privacy",
+            "rbi_paragraph": "Chapter V, Para 11",
+            "description": "Ensure data protection and minimization in outsourced IT services",
+            "category": "Outsourcing Agreement",
+            "thresholds": {
+                "score": 8,
+                "no_sensitive_features": true,
+                "MIA_accuracy": 0.5
+            },
+            "validation": "Check if score >= 8, no sensitive features, MIA accuracy <= 0.5",
+            "compliance_status": "To be assessed"
+        },
+        {
+            "id": "RBI_VI_13_safety",
+            "principle": "Safety",
+            "rbi_paragraph": "Chapter VI, Para 13",
+            "description": "Implement security controls and penetration testing for outsourced systems",
+            "category": "Risk Management",
+            "thresholds": {
+                "score": 8,
+                "attack_drop": 0.05
+            },
+            "validation": "Check if score >= 8, attack accuracy drop <= 0.05",
+            "compliance_status": "To be assessed"
+        },
+        {
+            "id": "RBI_IV_9_transparency",
+            "principle": "Transparency",
+            "rbi_paragraph": "Chapter IV, Para 9",
+            "description": "Provide clear documentation of AI decision processes in outsourced services",
+            "category": "General Principles",
+            "thresholds": {
+                "score": 8,
+                "explanation_coverage": 0.9
+            },
+            "validation": "Check if score >= 8, explanation coverage >= 0.9",
+            "compliance_status": "To be assessed"
+        },
+        {
+            "id": "RBI_VI_14_accountability",
+            "principle": "Accountability",
+            "rbi_paragraph": "Chapter VI, Para 14",
+            "description": "Maintain audit trails for outsourced IT processes",
+            "category": "Risk Management",
+            "thresholds": {
+                "score": 8,
+                "audit_trail_completeness": 1.0
+            },
+            "validation": "Check if score >= 8, audit trail completeness = 1.0",
+            "compliance_status": "To be assessed"
+        },
+        {
+            "id": "RBI_VI_13_robustness",
+            "principle": "Robustness",
+            "rbi_paragraph": "Chapter VI, Para 13",
+            "description": "Ensure resilience of outsourced systems against failures and attacks",
+            "category": "Risk Management",
+            "thresholds": {
+                "score": 8,
+                "failure_rate": 0.01
+            },
+            "validation": "Check if score >= 8, failure rate <= 0.01",
+            "compliance_status": "To be assessed"
+        },
+        {
+            "id": "RBI_IV_9_explainability",
+            "principle": "Explainability",
+            "rbi_paragraph": "Chapter IV, Para 9",
+            "description": "Provide interpretable AI explanations in outsourced credit scoring",
+            "category": "General Principles",
+            "thresholds": {
+                "score": 8,
+                "shap_coverage": 0.9
+            },
+            "validation": "Check if score >= 8, SHAP or LIME coverage >= 0.9",
+            "compliance_status": "To be assessed"
+        },
+        {
+            "id": "RBI_Unknown_fairness",
+            "principle": "Fairness",
+            "rbi_paragraph": "Unknown",
+            "description": "Role of IT Function Chapter IV Evaluation and Engagement of Service Providers 9 in outsourced credit scoring services",
+            "category": "General Principles",
+            "thresholds": {
+                "score": 8,
+                "Disparate Impact": 0.8,
+                "issues": 0
+            },
+            "validation": "Check if score >= 8, Disparate Impact >= 0.8, no bias issues",
+            "compliance_status": "To be assessed"
+        },
+        {
+            "id": "RBI_Unknown_privacy",
+            "principle": "Privacy",
+            "rbi_paragraph": "Unknown",
+            "description": "Additional requirements for Cross -Border Outsourcing Chapter X Exit Strategy 19 (Outsourcing Context)",
+            "category": "Exit Strategy",
+            "thresholds": {
+                "score": 8,
+                "no_sensitive_features": true,
+                "MIA_accuracy": 0.5
+            },
+            "validation": "Check if score >= 8, no sensitive features, MIA accuracy <= 0.5",
+            "compliance_status": "To be assessed"
+        },
+        {
+            "id": "RBI_Appendix_I_privacy",
+            "principle": "Privacy",
+            "rbi_paragraph": "Appendix I",
+            "description": "Exit Strategy Appendix I Usage of Cloud Computing ServicesAppendix II Outsourcing of Security Operations Centre Appendix III Services not considered under Outsourcing of IT Services RESERVE BANK OF INDIA DoS (Outsourcing Context)",
+            "category": "Exit Strategy",
+            "thresholds": {
+                "score": 8,
+                "no_sensitive_features": true,
+                "MIA_accuracy": 0.5
+            },
+            "validation": "Check if score >= 8, no sensitive features, MIA accuracy <= 0.5",
+            "compliance_status": "To be assessed"
+        },
+        {
+            "id": "RBI_Appendix_I_fairness",
+            "principle": "Fairness",
+            "rbi_paragraph": "Appendix I",
+            "description": "Depending upon the IT Outsourcing services provided (if any) by an RE to other RE(s), even an RE could be considered as a service provider to other RE, within this Master Direction .considered under Outsourcing of IT S ervices for the purpose of this Master Direction and b) Vendors / Entities who are not considered as Third- Party Service Provider (TPSP) for the purpose of this Master Direction. b) All expressions unless defined herein shall have the same meaning as have been assigned to them under the Banking Regulation Act,or the Reserve Bank of India Act,or Credit Information Companies (Regulation) Act,or Information Technology Act,or Companies Act ,and Rules made thereunder or any statutory modification or re- enactment thereto or as used in RBI Directions / Circulars, as the case may be in outsourced credit scoring services",
+            "category": "General Principles",
+            "thresholds": {
+                "score": 8,
+                "Disparate Impact": 0.8,
+                "issues": 0
+            },
+            "validation": "Check if score >= 8, Disparate Impact >= 0.8, no bias issues",
+            "compliance_status": "To be assessed"
+        }
+    ]
+}

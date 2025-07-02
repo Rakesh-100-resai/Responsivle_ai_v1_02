@@ -1,0 +1,14 @@
+.card:hover, .sector-card:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s;
+}
+.bg-image {
+  background-size: cover;
+  background-position: center;
+}
+.text-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+.badge {
+  font-size: 0.9em;
+}
