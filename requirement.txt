@@ -1,0 +1,10 @@
+pandas==2.2.3
+numpy==1.26.4
+joblib==1.4.2
+scikit-learn==1.5.2
+aif360==0.6.1
+adversarial-robustness-toolbox==1.18.2
+xgboost==2.1.1
+psutil==6.0.0
+sentence-transformers==3.1.1
+reportlab==4.2.5

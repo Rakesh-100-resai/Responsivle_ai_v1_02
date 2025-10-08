@@ -2,11 +2,13 @@ const express = require('express');
 const router = express.Router();
 const { spawn } = require('child_process');
 const path = require('path');
+const pythonPath = 'C:\\Users\\IFOCUS\\AppData\\Local\\Programs\\Python\\Python310\\python.exe';
 
 router.get('/run-compliance-check', (req, res) => {
   const scriptPath = path.join(__dirname, '..', 'map_rbi_compliance2.py');
 
-  const process = spawn('python3', [scriptPath]);
+  const process = spawn(pythonPath, [scriptPath]);
+  
 
   let output = '';
   process.stdout.on('data', data => output += data.toString());
@@ -23,13 +25,10 @@ router.get('/run-compliance-check', (req, res) => {
 
 module.exports = router;
 
-
-const { spawn } = require('child_process');
-const path = require('path');
 const fs = require('fs');
 
-app.get('/api/run-compliance-check', (req, res) => {
-  const scriptPath = path.join(__dirname, 'map_rbi_compliance2.py');
+router.get('/api/run-compliance-check', (req, res) => {
+  const scriptPath = path.join(__dirname, 'map_rbi_compliance.py');
   const evalPath = path.join(__dirname, 'evaluation_report.json');
   const requirementsPath = path.join(__dirname, 'proxy_updated_rbi_requirements.json');
 
@@ -39,7 +38,7 @@ app.get('/api/run-compliance-check', (req, res) => {
   }
 
   // 2. Run Python script
-  const pythonProcess = spawn('python3', [scriptPath]);
+  const pythonProcess = spawn( pythonPath, [scriptPath]);
 
   let output = '';
   let error = '';

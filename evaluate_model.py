@@ -504,182 +504,203 @@ def suppress_stdout():
         finally:
             sys.stdout = old_stdout
 
-# Evaluate safety
+# # Evaluate safety
+# def evaluate_safety(model, X, y, model_type):
+#     debug = False
+#     notes = []
+#     base_score = 10
+#     total_drop = 0
+#     successful_attacks = 0
+#     attempted_attacks = 0
+
+#     try:
+#         sys.stderr.flush()
+
+#         # Model diagnostics
+
+#         model_class = str(type(model))
+#         model_module = getattr(model, '__module__', 'unknown')
+#         has_n_estimators = hasattr(model, 'n_estimators')
+#         debug_print(f"Model class: {model_class}, module: {model_module}, has_n_estimators: {has_n_estimators}", debug)
+#         debug_print(f"X shape: {X.shape}, y shape: {y.shape}", debug)
+
+#         if psutil:
+#             mem = psutil.virtual_memory()
+#             debug_print(f"Memory usage: {mem.percent}% used, {mem.available / 1024 / 1024:.2f} MB available", debug)
+
+#         # Tree-based detection
+#         is_tree_based = any([
+#             'randomforestclassifier' in model_class.lower(),
+#             'xgbclassifier' in model_class.lower(),
+#             'sklearn.ensemble' in model_module.lower(),
+#             'xgboost' in model_module.lower(),
+#             has_n_estimators and ('ensemble' in model_module.lower() or 'xgboost' in model_module.lower())
+#         ])
+#         debug_print(f"Is tree-based: {is_tree_based}", debug)
+
+#         # Model type fallback
+#         inferred_model_type = model_type if model_type in ['logistic_regression', 'random_forest', 'xgboost'] else None
+#         if not inferred_model_type:
+#             inferred_model_type = 'xgboost' if 'xgbclassifier' in model_class.lower() else 'random_forest' if is_tree_based else 'logistic_regression'
+#             notes.append(f"Invalid model_type '{model_type}'. Using inferred: {inferred_model_type}.")
+#         effective_model_type = inferred_model_type
+
+#         debug_print(f"Effective model type: {effective_model_type}", debug)
+
+#         # Clip values
+#         try:
+#             clip_values = (float(np.min(X)), float(np.max(X)))
+#         except Exception as e:
+#             notes.append(f"Clip values failed: {str(e)}")
+#             clip_values = (0.0, 1.0)
+
+#         # Original accuracy
+#         try:
+#             y_pred = model.predict(X)
+#             acc_original = accuracy_score(y, y_pred)
+#             notes.append(f"Original accuracy: {acc_original:.2f}")
+#         except Exception as e:
+#             notes.append(f"Accuracy computation failed: {str(e)}")
+#             return max(0, min(10, base_score)), notes
+
+#         if ScikitlearnClassifier is None:
+#             notes.append("ART not available. Skipping adversarial attacks.")
+#             return max(0, min(10, base_score - 2)), notes
+
+#         # Wrap classifier
+#         try:
+#             classifier = ScikitlearnClassifier(model=model, clip_values=clip_values, use_logits=False)
+#         except Exception as e:
+#             notes.append(f"ScikitlearnClassifier failed: {str(e)}")
+#             return max(0, min(10, base_score - 2)), notes
+
+#         # Attacks list
+#         attacks = [
+#             ("Boundary", BoundaryAttack(estimator=classifier, targeted=False, max_iter=50, verbose=False)),
+#             ("HopSkipJump", HopSkipJump(classifier=classifier, targeted=False, max_iter=3, max_eval=20, init_eval=3, verbose=False))
+#         ]
+
+#         for name, attack in attacks:
+#             try:
+#                 attempted_attacks += 1
+#                 with suppress_stdout():
+#                     X_adv = attack.generate(x=X)
+#                 y_adv_pred = model.predict(X_adv)
+#                 acc_adv = accuracy_score(y, y_adv_pred)
+#                 drop = acc_original - acc_adv
+#                 total_drop += drop
+#                 successful_attacks += int(drop > 0.05)
+#                 notes.append(f"{name} attack → Accuracy drop: {drop:.2f}")
+#             except Exception as e:
+#                 notes.append(f"{name} attack failed: {str(e)}")
+#                 base_score -= 0.5
+
+#         # Final scoring
+#         if attempted_attacks == 0:
+#             penalty = 2 if effective_model_type in ['random_forest', 'xgboost'] else 3
+#             final_score = base_score - penalty
+#             notes.append("No attacks attempted.")
+#         elif successful_attacks >= 2:
+#             final_score = base_score - 5
+#         elif successful_attacks == 1:
+#             final_score = base_score - 3
+#         else:
+#             final_score = base_score
+
+#         if effective_model_type in ['random_forest', 'xgboost'] and final_score == base_score:
+#             final_score = min(final_score + 1, 10)
+
+#     except Exception as e:
+#         notes.append(f"Safety evaluation failed: {str(e)}")
+#         final_score = base_score - 6
+
+#     sys.stderr.flush()
+#     return max(0, min(10, final_score)), notes
+
+
+# --- Make sure these imports are at the top of your script ---
+import sys
+import numpy as np
+import psutil
+from sklearn.metrics import accuracy_score
+try:
+    from art.estimators.classification.scikitlearn import ScikitlearnClassifier
+except ImportError:
+    from art.estimators.classification import SklearnClassifier as ScikitlearnClassifier
+from art.estimators.classification.scikitlearn import ScikitlearnLogisticRegression
+from art.attacks.evasion import FastGradientMethod, ProjectedGradientDescent, HopSkipJump
+# ---
+
 def evaluate_safety(model, X, y, model_type):
-    debug = False
     notes = []
     base_score = 10
-    total_drop = 0
-    successful_attacks = 0
-    attempted_attacks = 0
-
+    
     try:
-        sys.stderr.flush()
+        # Infer the model type if not explicitly provided
+        model_class = str(type(model)).lower()
+        is_tree_based = 'randomforest' in model_class or 'xgb' in model_class
+        effective_model_type = model_type if model_type else ('logistic_regression' if 'logistic' in model_class else ('random_forest' if is_tree_based else 'unknown'))
 
-        # Model diagnostics
+        # Calculate original accuracy
+        acc_original = accuracy_score(y, model.predict(X))
+        notes.append(f"Original accuracy: {acc_original:.2f}")
 
-        model_class = str(type(model))
-        model_module = getattr(model, '__module__', 'unknown')
-        has_n_estimators = hasattr(model, 'n_estimators')
-        debug_print(f"Model class: {model_class}, module: {model_module}, has_n_estimators: {has_n_estimators}", debug)
-        debug_print(f"X shape: {X.shape}, y shape: {y.shape}", debug)
+        # Check if ART is available
+        if not ScikitlearnClassifier:
+            notes.append("ART library not found. Skipping safety evaluation.")
+            return 2, notes
 
-        if psutil:
-            mem = psutil.virtual_memory()
-            debug_print(f"Memory usage: {mem.percent}% used, {mem.available / 1024 / 1024:.2f} MB available", debug)
+        attacks = []
+        classifier = None
+        clip_values = (float(np.min(X)), float(np.max(X)))
 
-        # Tree-based detection
-        is_tree_based = any([
-            'randomforestclassifier' in model_class.lower(),
-            'xgbclassifier' in model_class.lower(),
-            'sklearn.ensemble' in model_module.lower(),
-            'xgboost' in model_module.lower(),
-            has_n_estimators and ('ensemble' in model_module.lower() or 'xgboost' in model_module.lower())
-        ])
-        debug_print(f"Is tree-based: {is_tree_based}", debug)
+        # --- This is the critical logic that selects the right tools ---
+        if effective_model_type == 'logistic_regression':
+            notes.append("✅ Using gradient-based (white-box) attacks for Logistic Regression.")
+            # Use the specialized wrapper that provides gradients
+            classifier = ScikitlearnLogisticRegression(model=model, clip_values=clip_values)
+            # Use fast, gradient-based attacks
+            attacks.extend([
+                ("FGSM", FastGradientMethod(estimator=classifier, eps=0.1)),
+                ("PGD", ProjectedGradientDescent(estimator=classifier, eps=0.1, max_iter=20))
+            ])
+        elif effective_model_type in ['random_forest', 'xgboost']:
+            notes.append("✅ Using query-based (black-box) attacks for tree-based model.")
+            # Use the generic wrapper for black-box attacks
+            classifier = ScikitlearnClassifier(model=model, clip_values=clip_values)
+            # Use a suitable black-box attack
+            attacks.extend([
+                ("HopSkipJump", HopSkipJump(classifier=classifier, targeted=False, max_iter=5, max_eval=100, verbose=False))
+            ])
+        else:
+            notes.append(f"Safety evaluation skipped for unsupported model type: {effective_model_type}")
+            return 5, notes
+        # --- End of critical logic ---
 
-        # Model type fallback
-        inferred_model_type = model_type if model_type in ['logistic_regression', 'random_forest', 'xgboost'] else None
-        if not inferred_model_type:
-            inferred_model_type = 'xgboost' if 'xgbclassifier' in model_class.lower() else 'random_forest' if is_tree_based else 'logistic_regression'
-            notes.append(f"Invalid model_type '{model_type}'. Using inferred: {inferred_model_type}.")
-        effective_model_type = inferred_model_type
-
-        debug_print(f"Effective model type: {effective_model_type}", debug)
-
-        # Clip values
-        try:
-            clip_values = (float(np.min(X)), float(np.max(X)))
-        except Exception as e:
-            notes.append(f"Clip values failed: {str(e)}")
-            clip_values = (0.0, 1.0)
-
-        # Original accuracy
-        try:
-            y_pred = model.predict(X)
-            acc_original = accuracy_score(y, y_pred)
-            notes.append(f"Original accuracy: {acc_original:.2f}")
-        except Exception as e:
-            notes.append(f"Accuracy computation failed: {str(e)}")
-            return max(0, min(10, base_score)), notes
-
-        if ScikitlearnClassifier is None:
-            notes.append("ART not available. Skipping adversarial attacks.")
-            return max(0, min(10, base_score - 2)), notes
-
-        # Wrap classifier
-        try:
-            classifier = ScikitlearnClassifier(model=model, clip_values=clip_values, use_logits=False)
-        except Exception as e:
-            notes.append(f"ScikitlearnClassifier failed: {str(e)}")
-            return max(0, min(10, base_score - 2)), notes
-
-        # Attacks list
-        attacks = [
-            ("Boundary", BoundaryAttack(estimator=classifier, targeted=False, max_iter=50, verbose=False)),
-            ("HopSkipJump", HopSkipJump(classifier=classifier, targeted=False, max_iter=3, max_eval=20, init_eval=3, verbose=False))
-        ]
-
+        # Run the selected attacks
+        successful_attacks = 0
         for name, attack in attacks:
             try:
-                attempted_attacks += 1
-                with suppress_stdout():
-                    X_adv = attack.generate(x=X)
-                y_adv_pred = model.predict(X_adv)
-                acc_adv = accuracy_score(y, y_adv_pred)
+                X_adv = attack.generate(x=X)
+                acc_adv = accuracy_score(y, model.predict(X_adv))
                 drop = acc_original - acc_adv
-                total_drop += drop
-                successful_attacks += int(drop > 0.05)
+                if drop > 0.05:
+                    successful_attacks += 1
                 notes.append(f"{name} attack → Accuracy drop: {drop:.2f}")
             except Exception as e:
-                notes.append(f"{name} attack failed: {str(e)}")
-                base_score -= 0.5
+                notes.append(f"'{name}' attack failed: {str(e)}")
 
-        # Final scoring
-        if attempted_attacks == 0:
-            penalty = 2 if effective_model_type in ['random_forest', 'xgboost'] else 3
-            final_score = base_score - penalty
-            notes.append("No attacks attempted.")
-        elif successful_attacks >= 2:
-            final_score = base_score - 5
-        elif successful_attacks == 1:
-            final_score = base_score - 3
+        # Calculate the final score based on results
+        if successful_attacks > 0:
+            final_score = base_score - 4
         else:
             final_score = base_score
 
-        if effective_model_type in ['random_forest', 'xgboost'] and final_score == base_score:
-            final_score = min(final_score + 1, 10)
-
     except Exception as e:
-        notes.append(f"Safety evaluation failed: {str(e)}")
+        notes.append(f"Safety evaluation failed entirely: {str(e)}")
         final_score = base_score - 6
 
-    sys.stderr.flush()
     return max(0, min(10, final_score)), notes
-
-
-# def main():
-#     # Parse arguments
-#     parser = argparse.ArgumentParser(description='Evaluate a model for fairness, privacy, and safety.')
-#     parser.add_argument('model_path', help='Path to the model file (e.g., xgboost_model.pkl)')
-#     parser.add_argument('dataset_path', help='Path to the test dataset (e.g., german_credit_test.csv)')
-#     parser.add_argument('principles', help='List of principles to evaluate (e.g., ["fairness", "privacy", "safety"])')
-#     parser.add_argument('--model_type', type=str, default=None, choices=['logistic_regression', 'random_forest', 'xgboost'], help='Explicitly specify model type (optional).')
-#     args = parser.parse_args()
-
-#     # Debug input arguments
-#     debug_print(f"Received arguments: model_path='{args.model_path}', dataset_path='{args.dataset_path}', principles='{args.principles}', model_type='{args.model_type}'")
-
-#     # Parse principles
-#     try:
-#         principles = json.loads(args.principles)
-#     except Exception as e:
-#         debug_print(f"Error parsing principles: {str(e)}")
-#         print(json.dumps({"error": f"Error parsing principles: {e}"}))
-#         sys.exit(1)
-
-#     # Load model and data
-#     try:
-#         model, X, y, data = load_model_and_data(model_path=args.model_path, dataset_path=args.dataset_path, model_type_arg=args.model_type)
-#     except Exception as e:
-#         debug_print(f"Error in load_model_and_data: {str(e)}")
-#         print(json.dumps({"error": f"Error loading model or data: {e}"}))
-#         sys.exit(1)
-
-#     # Determine model_type for evaluate_safety
-#     model_types = [key for key in MODEL_CONFIGS if key in args.model_path.lower() or key == args.model_type]
-#     if not model_types:
-#         debug_print(f"Warning: No model type matched in model_path '{args.model_path}' or model_type '{args.model_type}'. Defaulting to 'logistic_regression'.")
-#         model_type = 'logistic_regression'
-#     else:
-#         model_type = model_types[0]
-#     debug_print(f"Selected model_type for evaluation: {model_type}")
-
-#     # Evaluate based on principles
-#     report = {}
-#     for principle in principles:
-#         try:
-#             if principle == 'fairness':
-#                 score, notes = evaluate_fairness(model, X, y, data)
-#             elif principle == 'privacy':
-#                 score, notes = evaluate_privacy(model, X, y, data)
-#             elif principle == 'safety':
-#                 score, notes = evaluate_safety(model, X, y, model_type)
-#             else:
-#                 score, notes = 5, ["Direct model evaluation not implemented for this principle."]
-#             report[principle] = {"score": score, "notes": notes}
-#         except Exception as e:
-#             debug_print(f"Error evaluating principle {principle}: {str(e)}")
-#             report[principle] = {"score": 5, "notes": [f"Error evaluating principle: {e}"]}
-
-#     # Output the report
-#     print(json.dumps(report))
-#     report_path = "evaluation_report.json"
-#     try:
-#         with open(report_path, 'w') as f:
-#             json.dump(report, f, indent=2)
-#     except Exception as e:
-#         debug_print(f"Could not save report to JSON: {e}")
 
 def main():
     # Parse arguments

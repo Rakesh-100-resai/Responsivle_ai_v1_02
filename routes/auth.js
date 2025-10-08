@@ -3,7 +3,7 @@ const router = express.Router();
 
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
-  if (username === 'admin2' && password === 'password') {
+  if (username === 'admin' && password === 'ifocus@123') {
     res.json({ success: true });
   } else {
     res.status(401).json({ error: 'Invalid credentials' });

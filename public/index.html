@@ -1,0 +1,194 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsible AI Explorer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- CRITICAL FIX: Added Font Awesome to display the icons --
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    /* This style ensures the card has the desired hover effect for better user feedback */
+    .sector-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .sector-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container my-5">
+    <h1 class="text-center mb-4">Responsible AI Use Case Explorer</h1>
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4" id="sector-grid">
+      <!-- The script will generate the 5 sector cards here --
+    </div>
+  </div>
+  <script>
+    // FIX: Data for all 5 sectors is now defined here.
+    // Each object contains a unique icon class and a correct URL for its respective page.
+    const sectors = [
+      {
+        id: 'finance',
+        title: 'Finance & Banking',
+        summary: 'Explore AI for fairness in loans, credit, and fraud detection.',
+        icon: 'fa-landmark', // Font Awesome icon class
+        url: 'sectors/finance/finance_sector.html'
+      },
+      {
+        id: 'healthcare',
+        title: 'Healthcare',
+        summary: 'Advancing patient care with responsible AI in diagnostics and data.',
+        icon: 'fa-heart-pulse', // Font Awesome icon class
+        url: 'sectors/healthcare/healthcare_sector.html'
+      },
+      {
+        id: 'education',
+        title: 'Education',
+        summary: 'Enhancing learning outcomes with AI in grading and tutoring.',
+        icon: 'fa-graduation-cap', // Font Awesome icon class
+        url: 'sectors/education/education_sector.html'
+      },
+      {
+        id: 'hr',
+        title: 'HR / Recruitment',
+        summary: 'Building fairer talent management with data-driven AI.',
+        icon: 'fa-users', // Font Awesome icon class
+        url: 'sectors/hr/hr_sector.html'
+      },
+      {
+        id: 'law',
+        title: 'Law',
+        summary: 'Transforming legal practice with AI-powered analysis tools.',
+        icon: 'fa-gavel', // Font Awesome icon class
+        url: 'sectors/law/law_sector.html'
+      }
+    ];
+
+    function loadSectors() {
+      const grid = document.getElementById('sector-grid');
+      let cardsHtml = ''; // Build the HTML string here for better performance
+
+      sectors.forEach(sector => {
+        // This HTML structure exactly matches the appearance from your original code.
+        cardsHtml += `
+          <div class="col">
+            <div class="card h-100 shadow-sm sector-card">
+              <!-- FIX: Replaced the broken img tag with a working Font Awesome icon element --
+              <div class="text-center mt-3">
+                 <i class="fas ${sector.icon} fa-2x text-primary bg-light p-3 rounded-circle"></i>
+              </div>
+              <div class="card-body text-center d-flex flex-column">
+                <h3 class="card-title">${sector.title}</h3>
+                <p class="card-text flex-grow-1">${sector.summary.substring(0, 50)}...</p>
+                <!-- FIX: The link now uses the correct URL for each specific sector --
+                <a href="${sector.url}" class="btn btn-primary w-100 mt-auto" aria-label="Explore ${sector.title} sector">Explore</a>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      // The grid is updated only once with the HTML for all 5 cards.
+      grid.innerHTML = cardsHtml;
+    }
+
+    // Run the function to display the cards.
+    loadSectors();
+  </script>
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsible AI Explorer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .sector-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .sector-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  
+  <div class="container text-end pt-3">
+    <button id="logout-button" class="btn btn-outline-secondary">Logout</button>
+  </div>
+
+  <div class="container my-5">
+    <h1 class="text-center mb-4">Responsible AI Use Case Explorer</h1>
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4" id="sector-grid">
+      </div>
+  </div>
+
+  <script>
+    const sectors = [
+      { id: 'finance', title: 'Finance & Banking', summary: 'Explore AI for fairness in loans, credit, and fraud detection.', icon: 'fa-landmark', url: 'sectors/finance/finance_sector.html' },
+      { id: 'healthcare', title: 'Healthcare', summary: 'Advancing patient care with responsible AI in diagnostics and data.', icon: 'fa-heart-pulse', url: 'sectors/healthcare/healthcare_sector.html' },
+      { id: 'education', title: 'Education', summary: 'Enhancing learning outcomes with AI in grading and tutoring.', icon: 'fa-graduation-cap', url: 'sectors/education/education_sector.html' },
+      { id: 'hr', title: 'HR / Recruitment', summary: 'Building fairer talent management with data-driven AI.', icon: 'fa-users', url: 'sectors/hr/hr_sector.html' },
+      { id: 'law', title: 'Law', summary: 'Transforming legal practice with AI-powered analysis tools.', icon: 'fa-gavel', url: 'sectors/law/law_sector.html' }
+    ];
+
+    function loadSectors() {
+      const grid = document.getElementById('sector-grid');
+      let cardsHtml = '';
+      sectors.forEach(sector => {
+        cardsHtml += `
+          <div class="col">
+            <div class="card h-100 shadow-sm sector-card">
+              <div class="text-center mt-3">
+                   <i class="fas ${sector.icon} fa-2x text-primary bg-light p-3 rounded-circle"></i>
+              </div>
+              <div class="card-body text-center d-flex flex-column">
+                <h3 class="card-title">${sector.title}</h3>
+                <p class="card-text flex-grow-1">${sector.summary.substring(0, 50)}...</p>
+                <a href="${sector.url}" class="btn btn-primary w-100 mt-auto" aria-label="Explore ${sector.title} sector">Explore</a>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      grid.innerHTML = cardsHtml;
+    }
+
+    function checkAuthAndLoad() {
+      // 1. Check for the temporary login flag instead of a token
+      const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+      
+      if (isLoggedIn !== 'true') {
+        // If not logged in, redirect to the login page
+        window.location.href = '/login.html';
+      } else {
+        // If logged in, load the page content
+        loadSectors();
+      }
+    }
+    
+    function logout() {
+      // 2. Remove the temporary flag from session storage
+      sessionStorage.removeItem('isLoggedIn');
+      window.location.href = '/login.html';
+    }
+
+    // Attach logout functionality to the button
+    document.getElementById('logout-button').addEventListener('click', logout);
+
+    // Run the authentication check when the page loads
+    checkAuthAndLoad();
+  </script>
+</body>
+</html>
