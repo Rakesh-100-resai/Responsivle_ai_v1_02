@@ -1,4 +1,4 @@
-runtime: nodejs18  # or python39 depending on your app requirements
+runtime: nodejs20  # or python39 depending on your app requirements
 
 handlers:
   - url: /.*
