@@ -1,0 +1,8 @@
+runtime: nodejs18  # or python39 depending on your app requirements
+
+handlers:
+  - url: /.*
+    script: auto
+
+env_variables:
+  GCS_BUCKET: "resai_bucket_1"
